@@ -1,4 +1,4 @@
-package kafka.test.example;
+package kafka.test.steps.example;
 
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.producer.Producer;

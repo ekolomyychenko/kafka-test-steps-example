@@ -1,4 +1,4 @@
-package kafka.test.example;
+package kafka.test.steps.example;
 
 import org.apache.kafka.clients.admin.NewTopic;
 
@@ -14,7 +14,7 @@ public class ConfigHelper {
     public static Collection<NewTopic> getKafkaTopics() throws FileNotFoundException {
         Collection<NewTopic> collection = new ArrayList<>();
 
-        Scanner scanner = new Scanner(new File("src/main/resources/kafka-topics"));
+        Scanner scanner = new Scanner(new File("src/test/resources/kafka-topics"));
         while (scanner.hasNextLine()) {
             collection.add(new NewTopic(scanner.nextLine(), 1, Short.valueOf("1")));
         }
