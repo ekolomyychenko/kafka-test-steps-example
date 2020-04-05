@@ -16,7 +16,6 @@ public class KafkaTest {
 
     @Rule
     public KafkaContainer kafka = new KafkaContainer()
-            .withExposedPorts(9092, 9093, 2181)
             .withEmbeddedZookeeper();
 
     private KafkaClient kafkaClient = new KafkaClient();
