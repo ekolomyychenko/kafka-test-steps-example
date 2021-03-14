@@ -10,6 +10,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -27,17 +28,14 @@ public class KafkaTest {
 
         KafkaClient.BOOTSTRAP_SERVERS = kafka.getBootstrapServers();
         kafkaClient.createTopics();
-
         Producer producer = kafkaClient.createProducer();
+        Consumer consumer = kafkaClient.createConsumer("some-test-topic");
+
         kafkaClient.send(producer, "some-test-topic", "Hello");
         kafkaClient.send(producer, "some-test-topic", "World");
 
-        Consumer consumer = kafkaClient.createConsumer("some-test-topic");
         List<String> messagesActual = kafkaClient.getMessages(consumer);
-
-        List<String> messagesExpected = new ArrayList<>();
-        messagesExpected.add("Hello");
-        messagesExpected.add("World");
+        List<String> messagesExpected = new ArrayList<>(Arrays.asList("Hello", "World"));
 
         Assertions.assertEquals(messagesExpected, messagesActual);
     }
