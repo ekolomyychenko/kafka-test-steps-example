@@ -35,8 +35,6 @@ public class KafkaTest {
         Consumer consumer = kafkaClient.createConsumer("some-test-topic");
         List<String> messagesActual = kafkaClient.getMessages(consumer);
 
-        System.out.println(messagesActual);
-        
         List<String> messagesExpected = new ArrayList<>();
         messagesExpected.add("Hello");
         messagesExpected.add("World");

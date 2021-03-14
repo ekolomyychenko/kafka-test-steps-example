@@ -1,6 +1,7 @@
 package kafka.test.steps.example;
 
 
+import lombok.extern.log4j.Log4j2;
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.CreateTopicsResult;
 import org.apache.kafka.clients.admin.NewTopic;
@@ -16,12 +17,10 @@ import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 
-
+@Log4j2
 public class KafkaClient {
 
-
     public static String BOOTSTRAP_SERVERS;
-
 
     private Properties buildConsumerProps() {
         Properties props = new Properties();
@@ -50,7 +49,6 @@ public class KafkaClient {
         return props;
     }
 
-
     public void createTopics() throws ExecutionException, InterruptedException, IOException {
         Properties props = buildAdminClientProps();
         Collection<NewTopic> collection = ConfigHelper.getKafkaTopics();
@@ -74,19 +72,16 @@ public class KafkaClient {
     public void send(Producer<String, String> producer, String topic, String event) throws ExecutionException, InterruptedException {
         ProducerRecord<String, String> record = new ProducerRecord(topic, UUID.randomUUID().toString(), event);
         producer.send(record).get();
+        log.info(String.format("Send message with producer %s:\n%s", producer.toString(), record.toString()));
     }
-
 
     public List<String> getMessages(Consumer<String, String> consumer) {
         List<String> events = new ArrayList<>();
-
         ConsumerRecords<String, String> records = consumer.poll(1000);
-        for (ConsumerRecord<String, String> record : records) {
-            events.add(record.value());
-        }
-
+        records.forEach(record -> events.add(record.value()));
         consumer.commitSync();
         consumer.close();
+        log.info(String.format("Get messages with consumer %s:\n%s", consumer.toString(), events.toString()));
         return events;
     }
 
