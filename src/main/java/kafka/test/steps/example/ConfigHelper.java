@@ -16,7 +16,7 @@ public class ConfigHelper {
 
         Scanner scanner = new Scanner(new File("src/test/resources/kafka-topics"));
         while (scanner.hasNextLine()) {
-            collection.add(new NewTopic(scanner.nextLine(), 1, Short.valueOf("1")));
+            collection.add(new NewTopic(scanner.nextLine(), 1, Short.parseShort("1")));
         }
         return collection;
     }
