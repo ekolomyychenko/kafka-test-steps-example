@@ -3,6 +3,7 @@ package kafka.test.steps.example;
 
 import lombok.extern.log4j.Log4j2;
 import org.apache.kafka.clients.admin.AdminClient;
+import org.apache.kafka.clients.admin.AdminClientConfig;
 import org.apache.kafka.clients.admin.CreateTopicsResult;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.consumer.*;
@@ -41,11 +42,8 @@ public class KafkaClient {
 
     private Properties buildAdminClientProps() {
         Properties props = new Properties();
-        props.put("bootstrap.servers", BOOTSTRAP_SERVERS);
-        props.put("client.id", UUID.randomUUID().toString());
-        props.put("group.id", UUID.randomUUID().toString());
-        props.put("auto.offset.reset", "earliest");
-        props.put("enable.auto.commit", true);
+        props.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, BOOTSTRAP_SERVERS);
+        props.put(AdminClientConfig.CLIENT_ID_CONFIG, UUID.randomUUID().toString());
         return props;
     }
 
