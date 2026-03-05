@@ -27,17 +27,19 @@ src/
 
 ## Requirements
 
-- JDK 12
+- JDK 11
 - Maven
 - Docker (used by Testcontainers to run Kafka)
 
 ## Running the tests
 
 ```bash
-mvn test
+mvn clean test
+mvn allure:serve
 ```
 
 Docker must be running before executing the tests. Testcontainers will pull and start the Kafka image automatically.
+
 
 ## How it works
 

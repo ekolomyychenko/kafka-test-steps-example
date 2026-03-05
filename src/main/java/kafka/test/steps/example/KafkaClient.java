@@ -1,5 +1,7 @@
 package kafka.test.steps.example;
 
+import io.qameta.allure.Allure;
+import io.qameta.allure.Step;
 import lombok.extern.log4j.Log4j2;
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.AdminClientConfig;
@@ -16,6 +18,7 @@ import java.io.IOException;
 import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
 
 @Log4j2
 public class KafkaClient {
@@ -36,6 +39,7 @@ public class KafkaClient {
         return props;
     }
 
+    @Step("Create consumer for topic '{topic}'")
     public Consumer<String, String> createConsumer(String topic) {
         Properties props = buildConsumerProps();
         Consumer<String, String> consumer = new KafkaConsumer<>(
@@ -51,9 +55,13 @@ public class KafkaClient {
         return props;
     }
 
+    @Step("Create Kafka topics")
     public void createTopics() throws ExecutionException, InterruptedException, IOException {
         Properties props = buildAdminClientProps();
         Collection<NewTopic> collection = ConfigHelper.getKafkaTopics();
+        Allure.addAttachment("Topics", collection.stream()
+                .map(t -> t.name() + " (partitions=" + t.numPartitions() + ", replication=" + t.replicationFactor() + ")")
+                .collect(Collectors.joining("\n")));
         try (AdminClient adminClient = AdminClient.create(props)) {
             adminClient.createTopics(collection).all().get();
         }
@@ -66,24 +74,29 @@ public class KafkaClient {
         return props;
     }
 
+    @Step("Create Kafka producer")
     public Producer<String, String> createProducer() {
         Properties props = buildProducerProps();
         return new KafkaProducer<>(props, new StringSerializer(), new StringSerializer());
     }
 
+    @Step("Send message '{event}' to topic '{topic}'")
     public void send(Producer<String, String> producer, String topic, String event)
             throws ExecutionException, InterruptedException {
         ProducerRecord<String, String> record = new ProducerRecord<>(topic, UUID.randomUUID().toString(), event);
+        Allure.addAttachment("Message", event);
         producer.send(record).get();
         log.info("Send message with producer {}:\n{}", producer, record);
     }
 
+    @Step("Get messages from topic")
     public List<String> getMessages(Consumer<String, String> consumer) {
         List<String> events = new ArrayList<>();
         ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(1000));
         records.forEach(record -> events.add(record.value()));
         consumer.commitSync();
         consumer.close();
+        Allure.addAttachment("Messages", String.join("\n", events));
         log.info("Get messages with consumer {}:\n{}", consumer, events);
         return events;
     }
